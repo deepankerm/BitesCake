@@ -1,10 +1,13 @@
 import { prisma } from "@/lib/prisma";
+import { isStoreOpen } from "@/lib/storeHours";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Truck, Zap } from "lucide-react";
+import { Star, Truck, Zap, Clock } from "lucide-react";
 
 export default async function Menu(props: { searchParams: Promise<{ category?: string; search?: string }> }) {
   const searchParams = await props.searchParams;
+  const open = isStoreOpen();
+
   let products: any[] = [];
   try { products = await prisma.product.findMany({ include: { category: true } }); } catch (e) {}
   
@@ -42,6 +45,14 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
   return (
     <div className="bg-white px-4 lg:px-8 py-8 w-full">
       <div className="max-w-[100rem] mx-auto">
+
+        {/* Closed Banner */}
+        {!open && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3">
+            <Clock size={20} className="text-amber-600 shrink-0" />
+            <p className="text-sm text-amber-800"><strong>We're currently closed.</strong> Orders will be accepted from 9:00 AM tomorrow. You can still browse and send us an enquiry on WhatsApp!</p>
+          </div>
+        )}
         
         {/* Breadcrumb / Title */}
         <div className="mb-6">
@@ -96,7 +107,7 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
                   </div>
                   
                   <div className="flex items-center gap-1.5 mt-2 text-[10px] md:text-xs text-gray-500 font-medium bg-gray-50 p-1.5 rounded">
-                    <Truck size={14} className="text-gray-400 shrink-0" /> Earliest Delivery: <strong className="text-green-600">Today directly</strong>
+                    <Truck size={14} className="text-gray-400 shrink-0" /> Earliest Delivery: <strong className="text-green-600">{open ? 'Today directly' : 'Tomorrow'}</strong>
                   </div>
                 </div>
 
@@ -104,9 +115,15 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
                   <Link href={`/menu/${product.id}`} className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors uppercase tracking-wide">
                     Details
                   </Link>
-                  <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to instantly order: ${product.name}`} target="_blank" rel="noreferrer" className="flex-1 bg-primary hover:bg-primary-hover text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide">
-                     BUY NOW
-                  </a>
+                  {open ? (
+                    <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to instantly order: ${product.name}`} target="_blank" rel="noreferrer" className="flex-1 bg-primary hover:bg-primary-hover text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide">
+                       BUY NOW
+                    </a>
+                  ) : (
+                    <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to enquire about: ${product.name}. Please share availability for tomorrow.`} target="_blank" rel="noreferrer" className="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide">
+                       ENQUIRE
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

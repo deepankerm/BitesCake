@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { isStoreOpen } from "@/lib/storeHours";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Truck, Zap } from "lucide-react";
+import { Star, Truck, Zap, Clock } from "lucide-react";
 
 const mainCategories = [
   { name: 'Cakes', img: '/images/hero.png' },
@@ -13,6 +14,8 @@ const mainCategories = [
 ];
 
 export default async function Home() {
+  const open = isStoreOpen();
+
   let products: any[] = [];
   try {
     products = await prisma.product.findMany({ take: 6 });
@@ -38,7 +41,7 @@ export default async function Home() {
               Delicious Moments <br/> Delivered Fast.
             </h1>
             <Link href="/menu" className="inline-block bg-primary text-white text-xs md:text-base font-bold px-4 py-2 md:px-8 md:py-3 rounded-md shadow-md hover:bg-primary-hover transition-colors">
-              Order Online
+              {open ? 'Order Online' : 'Browse Menu'}
             </Link>
           </div>
           <Image 
@@ -109,9 +112,15 @@ export default async function Home() {
                   <Link href={`/menu/${product.id}`} className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors uppercase tracking-wide">
                     Details
                   </Link>
-                  <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to instantly order: ${product.name}`} target="_blank" rel="noreferrer" className="flex-1 bg-primary hover:bg-primary-hover text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide">
-                     BUY NOW
-                  </a>
+                  {open ? (
+                    <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to instantly order: ${product.name}`} target="_blank" rel="noreferrer" className="flex-1 bg-primary hover:bg-primary-hover text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide">
+                       BUY NOW
+                    </a>
+                  ) : (
+                    <a href={`https://wa.me/918178518520?text=Hi Bites Cake! I'd like to enquire about: ${product.name}. Please share details for tomorrow's order.`} target="_blank" rel="noreferrer" className="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-center py-2 md:py-2.5 rounded-md font-bold text-xs md:text-sm transition-colors shadow-sm uppercase tracking-wide flex items-center justify-center gap-1">
+                       <Clock size={14} /> ENQUIRE
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -124,7 +133,7 @@ export default async function Home() {
         <div className="max-w-[100rem] mx-auto px-4 flex justify-around flex-wrap gap-4 text-center">
            <div className="text-sm text-gray-600 font-bold">✓ 100% Fresh Verified</div>
            <div className="text-sm text-gray-600 font-bold">✓ Rated 4.9 in Delhi</div>
-           <div className="text-sm text-gray-600 font-bold">✓ Same Day Delivery</div>
+           <div className="text-sm text-gray-600 font-bold">✓ Open 9 AM – 10:30 PM</div>
         </div>
       </section>
     </main>

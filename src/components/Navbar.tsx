@@ -2,12 +2,20 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { Menu, Navigation, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Menu, Navigation, Search, Clock } from 'lucide-react'
+import { isStoreOpen, STORE_OPEN_TIME, STORE_CLOSE_TIME } from '@/lib/storeHours'
 
 export default function Navbar() {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    setOpen(isStoreOpen());
+    const interval = setInterval(() => setOpen(isStoreOpen()), 60000); // re-check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +26,15 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#1A1A1A] shadow-sm border-b border-gray-100 dark:border-gray-800 transition-all">
+      {/* Store Status Banner */}
+      <div className={`w-full text-center text-xs font-bold py-1.5 tracking-wide ${open ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+        <Clock size={12} className="inline mr-1.5 relative -top-[1px]" />
+        {open
+          ? `🟢 We're Open! Order now — Closing at ${STORE_CLOSE_TIME}`
+          : `🔴 We're Closed — Opens at ${STORE_OPEN_TIME}. Enquiries welcome!`
+        }
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
         
         {/* Left: Mobile Menu & Logo */}

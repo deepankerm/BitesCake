@@ -1,10 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { Star, Truck, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Star, Truck, Zap, Clock } from "lucide-react";
+import { isStoreOpen, STORE_OPEN_TIME } from "@/lib/storeHours";
 
 export default function ProductDetails({ params }: { params: { id: string } }) {
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    setOpen(isStoreOpen());
+    const interval = setInterval(() => setOpen(isStoreOpen()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const mockProducts = [
       { id: "1", name: 'Signature Bento Cake', description: 'Small but mighty! Perfect personalized bento cake for an intimate celebration.', price: 400.00, imageUrl: '/images/chocolate.png', category: { name: 'Bento Cake' } },
       { id: "2", name: 'Custom Tiered Cake', description: 'A masterfully decorated tiered cake. Let us know your dream flavour and colors!', price: 1500.00, imageUrl: '/images/hero.png', category: { name: 'Cakes' } },
@@ -22,7 +31,8 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
   const [color, setColor] = useState("");
 
   const handleWhatsAppOrder = () => {
-    const text = `Hello Bites Cake! I would like to place an order:
+    const text = open
+      ? `Hello Bites Cake! I would like to place an order:
 *Item*: ${product.name}
 *Category*: ${product.category.name}
 *Weight*: ${weight}
@@ -30,7 +40,16 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
 *Colour Preference*: ${color || 'Not specified'}
 *Message on Cake*: ${message || 'None'}
 
-How do we proceed with the payment?`;
+How do we proceed with the payment?`
+      : `Hello Bites Cake! I'd like to enquire about ordering for tomorrow:
+*Item*: ${product.name}
+*Category*: ${product.category.name}
+*Weight*: ${weight}
+*Flavour*: ${flavor || 'Not specified'}
+*Colour Preference*: ${color || 'Not specified'}
+*Message on Cake*: ${message || 'None'}
+
+I know you're closed now. Can I confirm this order for tomorrow?`;
 
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/918178518520?text=${encodedText}`, "_blank");
@@ -49,9 +68,18 @@ How do we proceed with the payment?`;
              </div>
           </div>
           
-          <div className="mt-8 bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3 text-sm text-blue-800">
-            <Truck size={20} className="shrink-0 text-blue-600" />
-            <p><strong>Order now</strong>, and we will deliver it safely straight to your doorstep in Delhi. Perfect condition guaranteed.</p>
+          <div className={`mt-8 rounded-lg p-4 flex gap-3 text-sm ${open ? 'bg-blue-50 border border-blue-100 text-blue-800' : 'bg-amber-50 border border-amber-200 text-amber-800'}`}>
+            {open ? (
+              <>
+                <Truck size={20} className="shrink-0 text-blue-600" />
+                <p><strong>Order now</strong>, and we will deliver it safely straight to your doorstep in Delhi. Perfect condition guaranteed.</p>
+              </>
+            ) : (
+              <>
+                <Clock size={20} className="shrink-0 text-amber-600" />
+                <p><strong>We're currently closed.</strong> You can still send an enquiry and we'll confirm your order when we open at {STORE_OPEN_TIME} tomorrow.</p>
+              </>
+            )}
           </div>
         </div>
 
@@ -104,10 +132,19 @@ How do we proceed with the payment?`;
             </div>
           </div>
 
-          <button onClick={handleWhatsAppOrder} className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white py-4 rounded-lg text-lg font-extrabold shadow-[0_8px_20px_rgba(216,26,96,0.25)] transition-all uppercase tracking-wide">
-            BUY NOW VIA WHATSAPP
+          <button onClick={handleWhatsAppOrder} className={`w-full flex items-center justify-center gap-2 text-white py-4 rounded-lg text-lg font-extrabold transition-all uppercase tracking-wide ${open ? 'bg-primary hover:bg-primary-hover shadow-[0_8px_20px_rgba(216,26,96,0.25)]' : 'bg-gray-500 hover:bg-gray-600 shadow-[0_8px_20px_rgba(0,0,0,0.15)]'}`}>
+            {open ? (
+              <>BUY NOW VIA WHATSAPP</>
+            ) : (
+              <><Clock size={20} /> SEND ENQUIRY VIA WHATSAPP</>
+            )}
           </button>
-          <p className="text-center text-xs text-gray-500 mt-4">You can easily attach a reference photo in chat.</p>
+          {!open && (
+            <p className="text-center text-xs text-amber-600 mt-3 font-medium">⏰ Store closed. We'll respond when we open at {STORE_OPEN_TIME}.</p>
+          )}
+          {open && (
+            <p className="text-center text-xs text-gray-500 mt-4">You can easily attach a reference photo in chat.</p>
+          )}
         </div>
       </div>
     </div>
