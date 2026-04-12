@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme inline {
+  --color-primary: #D81A60;  /* Vibrant Patisserie Pink/Red */
+  --color-primary-hover: #B5134F; 
+  --color-background-white: #F8F9FA; /* Very light grey for main body so white cards pop */
+  --color-text-main: #333333; 
+  --color-text-muted: #777777; 
+  --color-success: #1FAA59;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: var(--color-background-white);
+  --foreground: var(--color-text-main);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* E-commerce sites rarely have full stark dark modes by default, but let's provide a soft one just in case */
+    --background: #121212; 
+    --foreground: #EEEEEE; 
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.ecommerce-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ecommerce-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ecommerce-card {
+    background: #1A1A1A;
+    border-color: #333;
+  }
+}
+
+/* Custom Scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
