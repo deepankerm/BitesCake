@@ -1,5 +1,3 @@
-import { PrismaClient } from '@prisma/client'
-
 // Temporarily mocking PrismaClient for local demo to bypass Prisma 7 
 // driver adapter initialization errors and use our beautiful preset UI.
 export const prisma = {
@@ -13,4 +11,4 @@ export const prisma = {
        return { id: "1" };
     }
   }
-} as unknown as PrismaClient
+} as any;
