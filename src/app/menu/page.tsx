@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Truck, Zap } from "lucide-react";
 
-export default async function Menu(props: { searchParams: Promise<{ category?: string }> }) {
+export default async function Menu(props: { searchParams: Promise<{ category?: string; search?: string }> }) {
   const searchParams = await props.searchParams;
   let products: any[] = [];
   try { products = await prisma.product.findMany({ include: { category: true } }); } catch (e) {}
@@ -25,9 +25,19 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
     ? searchParams.category 
     : "All";
 
-  const displayedProducts = activeCategory === "All" 
+  const searchQuery = searchParams.search?.trim().toLowerCase() || "";
+
+  let displayedProducts = activeCategory === "All" 
     ? products 
     : products.filter(p => p.category.name.toLowerCase() === activeCategory.toLowerCase());
+
+  if (searchQuery) {
+    displayedProducts = displayedProducts.filter(p => 
+      p.name.toLowerCase().includes(searchQuery) || 
+      p.description.toLowerCase().includes(searchQuery) ||
+      p.category.name.toLowerCase().includes(searchQuery)
+    );
+  }
 
   return (
     <div className="bg-white px-4 lg:px-8 py-8 w-full">
@@ -35,7 +45,9 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
         
         {/* Breadcrumb / Title */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Order Cakes & Pastries Online in Delhi</h1>
+          <h1 className="text-2xl font-bold text-gray-800">
+            {searchQuery ? `Search results for "${searchParams.search}"` : 'Order Cakes & Pastries Online in Delhi'}
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Found {displayedProducts.length} items</p>
         </div>
 
