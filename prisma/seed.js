@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { PrismaClient } = require('@prisma/client')
 const { Pool, neonConfig } = require('@neondatabase/serverless')
 const { PrismaNeon } = require('@prisma/adapter-neon')

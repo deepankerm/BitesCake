@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const open = isStoreOpen();
 
-  let products = await prisma.product.findMany({ take: 6 });
-  let categories = await prisma.category.findMany();
+  const products = await prisma.product.findMany({ take: 6 });
+  const categories = await prisma.category.findMany();
 
   return (
     <main className="flex-1 flex flex-col bg-background text-foreground">

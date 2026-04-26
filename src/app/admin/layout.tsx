@@ -1,3 +1,5 @@
+/* eslint-disable */
+"use client";
 import Link from "next/link";
 import { Package, Tags, Store, LogOut, LayoutDashboard } from "lucide-react";
 

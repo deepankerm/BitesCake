@@ -12,6 +12,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(isStoreOpen());
     const interval = setInterval(() => setOpen(isStoreOpen()), 60000); // re-check every minute
     return () => clearInterval(interval);

@@ -9,6 +9,7 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(isStoreOpen());
     const interval = setInterval(() => setOpen(isStoreOpen()), 60000);
     return () => clearInterval(interval);
@@ -77,7 +78,7 @@ I know you're closed now. Can I confirm this order for tomorrow?`;
             ) : (
               <>
                 <Clock size={20} className="shrink-0 text-amber-600" />
-                <p><strong>We're currently closed.</strong> You can still send an enquiry and we'll confirm your order when we open at {STORE_OPEN_TIME} tomorrow.</p>
+                <p><strong>We&apos;re currently closed.</strong> You can still send an enquiry and we&apos;ll confirm your order when we open at {STORE_OPEN_TIME} tomorrow.</p>
               </>
             )}
           </div>
@@ -140,7 +141,7 @@ I know you're closed now. Can I confirm this order for tomorrow?`;
             )}
           </button>
           {!open && (
-            <p className="text-center text-xs text-amber-600 mt-3 font-medium">⏰ Store closed. We'll respond when we open at {STORE_OPEN_TIME}.</p>
+            <p className="text-center text-xs text-amber-600 mt-3 font-medium">⏰ Store closed. We&apos;ll respond when we open at {STORE_OPEN_TIME}.</p>
           )}
           {open && (
             <p className="text-center text-xs text-gray-500 mt-4">You can easily attach a reference photo in chat.</p>

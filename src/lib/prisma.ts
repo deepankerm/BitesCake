@@ -11,6 +11,7 @@ const prismaClientSingleton = () => {
   
   if (!url) {
     // Return dummy client to prevent build crash if env vars are missing during prerender
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return new PrismaClient() as any;
   }
   const pool = new Pool({ connectionString })
