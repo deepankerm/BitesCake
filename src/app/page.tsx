@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Truck, Zap, Clock } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const open = isStoreOpen();
 
