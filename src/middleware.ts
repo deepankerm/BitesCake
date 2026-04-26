@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
     const basicAuth = req.headers.get('authorization');
     if (basicAuth) {
       const authValue = basicAuth.split(' ')[1];
-      const decoded = Buffer.from(authValue, 'base64').toString('ascii');
+      const decoded = atob(authValue);
       const [user, pwd] = decoded.split(':');
 
       // Super simple, unbreakable password check
