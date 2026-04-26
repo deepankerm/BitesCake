@@ -4,31 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Truck, Zap, Clock } from "lucide-react";
 
-const mainCategories = [
-  { name: 'Cakes', img: '/images/hero.png' },
-  { name: 'Bento Cake', img: '/images/chocolate.png' },
-  { name: 'Cupcakes', img: '/images/croissants.png' },
-  { name: 'Muffins', img: '/images/croissants.png' },
-  { name: 'Pastries', img: '/images/chocolate.png' },
-  { name: 'Dry Cake', img: '/images/hero.png' },
-];
-
 export default async function Home() {
   const open = isStoreOpen();
 
-  let products: any[] = [];
-  try {
-    products = await prisma.product.findMany({ take: 6 });
-  } catch (e) {}
-
-  if (products.length === 0) {
-    products = [
-      { id: "1", name: 'Decadent Bento Cake (250g)', price: 400.00, imageUrl: '/images/chocolate.png' },
-      { id: "2", name: 'Signature Chocolate Truffle Cake (1kg)', price: 1500.00, imageUrl: '/images/hero.png' },
-      { id: "3", name: 'Assorted Gourmet Cupcakes (Box of 6)', price: 600.00, imageUrl: '/images/croissants.png' },
-      { id: "4", name: 'Classic Red Velvet Cake (0.5kg)', price: 550.00, imageUrl: '/images/hero.png' },
-    ];
-  }
+  let products = await prisma.product.findMany({ take: 6 });
+  let categories = await prisma.category.findMany();
 
   return (
     <main className="flex-1 flex flex-col bg-background text-foreground">
@@ -58,10 +38,10 @@ export default async function Home() {
       <section className="max-w-[100rem] mx-auto w-full px-4 lg:px-8 mb-12">
         <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Shop by Category</h2>
         <div className="flex gap-4 md:gap-8 overflow-x-auto pb-4 scrollbar-hide">
-          {mainCategories.map(cat => (
-            <Link href={`/menu?category=${encodeURIComponent(cat.name)}`} key={cat.name} className="flex flex-col items-center gap-3 shrink-0 group">
+          {categories.map((cat, i) => (
+            <Link href={`/menu?category=${encodeURIComponent(cat.name)}`} key={cat.id} className="flex flex-col items-center gap-3 shrink-0 group">
               <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden relative shadow-sm border-[3px] border-transparent group-hover:border-primary transition-all">
-                <Image src={cat.img} alt={cat.name} fill className="object-cover" />
+                <Image src={['/images/chocolate.png', '/images/hero.png', '/images/croissants.png'][i % 3]} alt={cat.name} fill className="object-cover" />
               </div>
               <span className="text-sm md:text-base font-semibold text-gray-700 group-hover:text-primary transition-colors">{cat.name}</span>
             </Link>
@@ -81,7 +61,7 @@ export default async function Home() {
             {products.map((product) => (
               <div key={product.id} className="ecommerce-card flex flex-col p-3 md:p-4 relative">
                 <div className="relative h-40 md:h-56 w-full rounded-md md:rounded-xl overflow-hidden bg-gray-100 mb-3 group">
-                  <Image src={product.imageUrl} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <Image src={product.imageUrl || '/images/hero.png'} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute top-2 left-2 bg-[#1FAA59] text-white text-[10px] md:text-xs font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
                     <Zap size={12} fill="currentColor" /> BESTSELLER
                   </div>
@@ -104,7 +84,7 @@ export default async function Home() {
                   </div>
                   
                   <div className="flex items-center gap-1.5 mt-2 text-[10px] md:text-xs text-gray-500 font-medium bg-gray-50 p-1.5 rounded">
-                    <Truck size={14} className="text-gray-400 shrink-0" /> Earliest Delivery: <strong className="text-green-600">Today directly</strong>
+                    <Truck size={14} className="text-gray-400 shrink-0" /> Earliest Delivery: <strong className="text-green-600">{open ? 'Today directly' : 'Tomorrow'}</strong>
                   </div>
                 </div>
 

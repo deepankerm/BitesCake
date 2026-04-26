@@ -9,20 +9,15 @@ export default async function Menu(props: { searchParams: Promise<{ category?: s
   const open = isStoreOpen();
 
   let products: any[] = [];
-  try { products = await prisma.product.findMany({ include: { category: true } }); } catch (e) {}
-  
-  if (products.length === 0) {
-    products = [
-      { id: "1", name: 'Signature Bento Cake', description: 'Small but mighty! Perfect personalized bento cake for an intimate celebration.', price: 400.00, imageUrl: '/images/chocolate.png', category: { name: 'Bento Cake' } },
-      { id: "2", name: 'Custom Tiered Cake', description: 'A masterfully decorated tiered cake. Let us know your dream flavour and colors!', price: 1500.00, imageUrl: '/images/hero.png', category: { name: 'Cakes' } },
-      { id: "3", name: 'Assorted Cupcakes', description: 'A box of 6 beautifully crafted cupcakes in your preferred customized flavours.', price: 600.00, imageUrl: '/images/croissants.png', category: { name: 'CupCakes' } },
-      { id: "4", name: 'Blueberry Muffins', description: 'Freshly baked, soft and fluffy classic blueberry muffins.', price: 150.00, imageUrl: '/images/croissants.png', category: { name: 'Muffins' } },
-      { id: "5", name: 'Butterscotch Pastry', description: 'Rich and creamy butterscotch pastry slice, perfect for a quick bite.', price: 120.00, imageUrl: '/images/chocolate.png', category: { name: 'Pastry' } },
-      { id: "6", name: 'Almond Dry Cake', description: 'Classic tea-time dry cake topped with freshly roasted almonds.', price: 350.00, imageUrl: '/images/hero.png', category: { name: 'Dry Cake' } },
-    ];
+  let allCategories: any[] = [];
+  try { 
+    products = await prisma.product.findMany({ include: { category: true } }); 
+    allCategories = await prisma.category.findMany();
+  } catch (e) {
+    console.error(e)
   }
-
-  const categories = ["All", "Cakes", "Bento Cake", "CupCakes", "Muffins", "Pastry", "Dry Cake"];
+  
+  const categories = ["All", ...allCategories.map(c => c.name)];
   
   const activeCategory = searchParams.category && searchParams.category !== "All" 
     ? searchParams.category 
